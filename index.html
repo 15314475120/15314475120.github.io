@@ -1,122 +1,111 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport"
           content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Document</title>
-    <!--bootstrap楼主用的是4.1.3的，各位一定看好版本 -->
-    <link href="https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/4.1.3/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdn.bootcdn.net/ajax/libs/bootstrap-table/1.15.2/bootstrap-table.css" rel="stylesheet">
-    <link rel="stylesheet" href="/css/bootstrap-table/all/all-v5.6.3.css" type="text/css">
-
-    <!--js，jquery版本3.4的，楼主自己排除过版本的干扰，各位效果不同请注意版本问题，最后一个是语言包，放最后 -->
-    <script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.4.0/jquery.min.js"></script>
-    <script src="https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/4.1.3/js/bootstrap.min.js"></script>
-    <script src="https://cdn.bootcdn.net/ajax/libs/bootstrap-table/1.15.2/bootstrap-table.js"></script>
-    <script src="https://cdn.bootcdn.net/ajax/libs/bootstrap-table/1.15.2/locale/bootstrap-table-zh-CN.js"></script>
+    <title>IAPP</title>
+    <!--图标样式-->
+    <link href="https://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.bootcss.com/bootstrap-datetimepicker/4.17.47/css/bootstrap-datetimepicker.min.css" rel="stylesheet">
+    <script src="https://cdn.bootcss.com/jquery/3.3.1/jquery.js"></script>
+    <script src="https://cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script src="https://cdn.bootcss.com/moment.js/2.24.0/moment-with-locales.js"></script>
+    <script src="https://cdn.bootcss.com/bootstrap-datetimepicker/4.17.47/js/bootstrap-datetimepicker.min.js"></script>
 </head>
+
+
 <body>
-<div id="user">
-    <div class="row">
-        <div class="col-12">
-            <h4 class="header-title mt-2">用户管理</h4>
-            <button type="button" class="btn btn-primary" style="text-align: right" id="addUser">添加</button>
-            <button type="button" class="btn btn-primary" style="text-align: right"id="deleteUser">删除</button>
-            <table id="selection-datatable123" class="table dt-responsive nowrap">
+<div class="row">
+    <form style="margin: 50px" method="get" action="https://www.appinformation.work:9999/important/downExcel">
+        <div class='col-sm-12'>
+
+            <div class="form-group">
+
+                <label>更新日期开始：</label>
+
+                <!--指定 date标记-->
+
+                <div class='input-group date' id='datetimepicker1' style="width: 400px">
+
+                    <input type='text' class="form-control" name="updateStart" />
+
+                    <span class="input-group-addon">
+
+                    <span class="glyphicon glyphicon-calendar"></span>
+
+                </span>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class='col-sm-12'>
+
+            <div class="form-group">
+
+                <label>更新日期结束：</label>
+
+                <!--指定 date标记-->
+
+                <div class='input-group date' id='datetimepicker2' style="width: 400px">
+
+                    <input type='text' class="form-control" name="updateEnd"/>
+
+                    <span class="input-group-addon">
+
+                    <span class="glyphicon glyphicon-calendar"></span>
+
+                </span>
+
+                </div>
+
+            </div>
+
+        </div>
+        <div class='col-sm-12'>
+
+            <div class="form-group">
+        <label>密钥:</label>
+        <input type="password" class="form-control" placeholder="Enter password" name="pass" style="width: 400px">
+            </div>
+        </div>
+        <button type="submit" class="btn btn-primary">下载</button>
+    </form>
 
 
-            </table>
-        </div><!-- end col-->
-    </div><!-- endrow-->
+
+
 </div>
-
 </body>
-<script>
+
+
+<script type="text/javascript">
+
+
     $(function () {
-        //loadTable();
-        $.get('https://www.appinformation.work:9999/important/list', {limit: 10,page:1}, function (res) {
-           console.log(res)
-        })
-    });
-    function loadTable(){
-        $("#selection-datatable123").bootstrapTable({
-            url : '/user/pageList', //请求后台的URL（*）
-            method: 'POST',
-            contentType:'application/x-www-form-urlencoded; charset=UTF-8',//post请求需设
-            sidePagination : "server", //分页方式：client客户端分页，server服务端分页（*）
-            pagination : true, //是否显示分页（*）
-            detailView: false,//这个是父子表的关键，下一篇博客重点介绍，这里先设置为false
-            cache: false,//缓存
-            clickToSelect: true,//点击行选中
-            queryParams :function (params) {//配置请求的参数，页数和下标，看你的配置
-                return {
-                    pageSize: params.limit,
-                    pageIndex: params.offset / params.limit + 1
-                };
-            },
-            pageSize : 5, //每页显示的记录数
-            pageNumber : 1, //当前第几页
-            pageList : [ 5, 10, 25, 50 ,100 ], //记录数可选列表*/
-            responseHandler: function(data){//这个也很重要，如果你的格式和要求的不对就要配置，等下上我的配置
-                return {"rows":data.data.page.records,//总记录数
-                    "total": data.data.page.total,//总页数
-                }  //约定rows
-            },
-            idField: 'userId',
-            uniqueId : 'userId',//这两个具体的区别还没发现
-            columns : [
-                { field: 'check',  checkbox: true, formatter: function (value, row, index) {
-                        if (row.check == true) {
-                            // console.log(row.serverName);
-                            //设置选中
-                            return {  checked: true };
-                        }
-                    }
-                },//这个就是check框
-                {title: '姓名', field: 'username', align: 'center'},
-                {title: '性别', field: 'sex', align: 'center',
-                    formatter: function (value, row, index) {
-                        if (value === 0) return '男';
-                        if (value === 1) return '女';
-                        return '保密';
-                    }},
-                {title: '邮箱', field: 'email', align: 'center'},
-                {title: '电话', field: 'mobile', align: 'center'},
-                {title: '状态', field: 'status', align: 'center',
-                    formatter: function (value, row, index) {
-                        if (value == 1) {
-                            return '<span class="badge badge-success">有效</span>';
-                        }else{return '<span class="badge badge-warning">锁定</span>';}
-                    }},
-                {title: '创建时间', field: 'createTime',  align: 'center'},
-                {title: '修改时间', field: 'updateTime',  align: 'center'},
-                { field: 'operate', title: '操作', align: 'center', events : operateEvents, formatter: 'operateFormatter' },
-            ]
+
+        $('#datetimepicker1').datetimepicker({
+
+            format: 'YYYY-MM-DD',
+
+            locale: moment.locale('zh-cn')
+
         });
-    };
 
-    window.operateEvents = {//这里做你的增删改查
-        'click .userInfo ': function (e, value, row, index) {
-            console.log(row.userId);
+        $('#datetimepicker2').datetimepicker({
 
-        },
-        'click .userEdit ': function (e, value, row, index) {
-            console.log(row.userId);
-        },
-        'click .userDelete ': function (e, value, row, index) {
-            console.log(row.userId);
-        }
-    };
+            format: 'YYYY-MM-DD',
 
-    //按钮的格式化
-    function operateFormatter(value, row, index) {
-        return [
-            '<button type="button" class="userInfo btn-small  btn-primary" style="margin-right:15px;"><i class="mdi mdi-account-card-details" ></i>&nbsp;详细信息</button>',
-            '<button type="button" class="userEdit btn-small   btn-primary" style="margin-right:15px;"><i class="fa fa-pencil-square-o" ></i>&nbsp;修改</button>',
-            '<button type="button" class="userDelete btn-small   btn-light" style="margin-right:15px;"><i class="mdi mdi-delete" ></i>&nbsp;删除</button>'
-        ].join('');
-    }
+            locale: moment.locale('zh-cn')
+
+        });
+
+    });
+
+
 </script>
 </html>
